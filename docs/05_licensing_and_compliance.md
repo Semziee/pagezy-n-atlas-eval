@@ -1,34 +1,43 @@
-# 05 — Licensing & Compliance Posture (Compliance Is a Feature)
+# 05 — Licensing and Compliance Notes
 
-## N-ATLAS / Awarri Research License — Our Obligations → Our Implementations
+This document records issues to verify before deployment. It is not legal
+advice or evidence that a hosted deployment is compliant.
 
-| Obligation | Where we implement it | Evidence |
+## Model and service terms
+
+| Area | Current project behavior | Before deployment |
 |---|---|---|
-| Max 1,000 active end-users (free tier) | Hard cap check in `app/app.py`; README statement; this doc | CP-4.2 |
-| Non-commercial use only | Repo LICENSE = Apache-2.0 for OUR code, with explicit notice that N-ATLAS model usage is bound by its own research license | CP-4.2 |
-| Display "Powered by Awarri" | Footer badge in both Gradio tabs | CP-4.1 |
-| Attribution in docs | README + `docs/05` + video minute 3 | CP-4.2 |
+| N-ATLAS / Awarri terms | The app displays an attribution and license notice in its footer. The app does **not** enforce an active-user cap. | Read the current N-ATLAS license and confirm that the intended use, hosting provider, audience, and scale are permitted. Do not describe a user cap as implemented. |
+| Other model terms | The Model Arena loads Qwen, Llama, and a PEFT adapter in addition to N-ATLAS. | Review and follow each model's access, use, and redistribution requirements. Gated model access must be granted to the account used for downloads. |
+| Repository license | `LICENSE` applies to this repository's code and identifies separate N-ATLAS terms. | Check individual dataset and audio provenance and license terms before redistribution; a repository license does not override third-party terms. |
 
-## README Compliance Block (copy verbatim into README.md)
-> "This prototype is architected to comply with the N-ATLAS Research License:
-> capped at 1,000 concurrent end-users, non-commercial use, with full attribution
-> to Awarri. 'Powered by Awarri' badge is displayed in the application footer.
-> Student voice-input (ASR) is explicitly deferred to Phase 2."
+## Attribution
 
-## Badge Snippet (footer of both tabs)
-```python
-gr.Markdown(
-    "<div style='text-align:center;opacity:0.7;font-size:0.85em'>"
-    "Powered by Awarri · N-ATLAS Research License · ≤1,000 users · Non-commercial"
-    "</div>")
-```
+The app footer displays: **Powered by Awarri · N-ATLAS Research License ·
+≤1,000 users · Non-commercial**. This text is attribution, not a technical
+access control or a substitute for checking the current license.
 
-## Data & Content Rights
-- Our passages are model-generated then human-verified → original content; license under Apache-2.0 with our copyright header.
-- Pre-recorded MP3s: record them yourself or use explicitly licensed TTS. Never scrape audiobooks.
-- Child data: **V1 collects zero child personal data.** No names, no accounts, no audio upload. State this everywhere — it is a selling point.
+## Data, privacy, and learner safety
 
-## What We Will NOT Do (write these down so future-you doesn't slip)
-- No user accounts, no analytics, no cookies → keeps us under the cap and out of data-protection scope.
-- No fine-tuning of N-ATLAS weights during the competition (license scope) — Phase 2 proposal only.
-- No claims of "deployed in schools" — it is a prototype, say prototype.
+- The app does not provide accounts, child-speech recognition, or an audio
+  upload workflow. Do not submit personal or sensitive learner information.
+- The repository includes records with different `human_verified` values.
+  Inspect that field and the source information for each record; do not describe
+  the entire passage collection as human-verified.
+- Review the provenance and terms for passages, SQuAD-derived data, model
+  outputs, and generated audio before reuse or redistribution.
+- The diagnostic is a simple demonstration based on manually entered scores.
+  It is not a clinical diagnosis or a validated educational assessment.
+
+## Deployment checklist
+
+- [ ] Verify current terms for N-ATLAS, the adapter, Qwen, Llama, all datasets,
+  and audio assets.
+- [ ] Confirm the intended deployment is permitted, including public access and
+  expected user volume. The app itself has no active-user-cap enforcement.
+- [ ] Store any model access token as a Hugging Face Space secret; never commit
+  it or paste it into a notebook.
+- [ ] Describe the product as a prototype and the diagnosis as an unvalidated
+  heuristic.
+- [ ] Avoid collecting personal or sensitive data and review hosting/logging
+  behavior separately.

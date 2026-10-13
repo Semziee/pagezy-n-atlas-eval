@@ -1,40 +1,42 @@
-# 07 — IP Strategy: Sellable at $1M, Copy-Resistant at $0
+# Project Content and Third-Party Components
 
-## The Core Insight
-The repo is **not** the asset. Anyone can clone a Gradio app in a weekend. The
-asset is three things copying cannot reproduce:
+This repository includes application code, prompts, datasets, model references,
+and sample audio. Their terms and provenance are not necessarily the same.
 
-1. **The operating manual** (this kit) — process as IP. Companies buy the *system*,
-   not the code.
-2. **The verified data flywheel** — human-verified passages, and later the
-   child-speech corpus. Data with provenance compounds; clones start at zero.
-3. **The evaluative judgment** — the frozen rubric, judge prompt, and the
-   discipline of logged, honest results. Reputation compounds too.
+## Repository contents
 
-## The Three-Layer Fence
+- Repository code is offered under the terms in [`LICENSE`](../LICENSE).
+- Prompt files under `prompts/` are included in this public repository.
+- Demo passages and SQuAD-derived files are checked into `data/`; review
+  provenance and applicable source terms before redistributing or using them.
+- MP3 files are provided in `assets/audio/`; review their source and terms
+  before reuse.
+- Model weights are downloaded separately. Their terms are set by the
+  respective model publishers and do not become Apache-2.0 licensed by being
+  referenced here.
 
-| Layer | What's in it | License / Visibility |
-|---|---|---|
-| **L1 — Open (the honey)** | Repo structure, day plans, harness code, Gradio app, sample data (20 passages), rubric *concept*, all docs except this one | Public, Apache-2.0. Optimized to be forked, starred, and quoted. |
-| **L2 — Visible but owned** | Full methodology docs, architecture rationale, demo video, pitch narrative | Public but © you; registered as your work. Hard to copy *well* because it requires taste. |
-| **L3 — Closed (the moat)** | `prompts/` (final system prompts), judge-prompt weights, `data/passages_full.jsonl` (40–60 verified), scoring thresholds after tuning, deployment configs/secrets, Phase-2 corpus plan | **Private repo `pagezy-core`.** Never committed here. |
+## Secrets and private data
 
-## Mechanics of the Fence (do these on Day 4)
-- [ ] Private repo `pagezy-core` created; L3 items live there. Public repo contains only a `prompts/README.md` saying "prompts maintained privately; contact for licensing."
-- [ ] `.gitignore` blocks: `*.env`, `secrets/`, `data/passages_full.jsonl`, `prompts/final/`, `results/private/`.
-- [ ] `scripts/where_am_i.py` verifies the fence: fails CI-style if any L3 path is tracked by git.
-- [ ] Watermark: every passage contains one subtle "canary" sentence pattern unique to your corpus (documented only in `pagezy-core`) — proves copying later.
-- [ ] Copyright header in every source file: "(c) 2026 <Your Name>. Apache-2.0 for code; methodology proprietary."
+Do not commit access tokens, private learner data, or restricted model files.
+The root `.gitignore` excludes common secret locations and selected private
+artifact paths. An ignore rule is not a substitute for checking what is
+actually staged:
 
-## Why This Still Wins the Competition
-Judges see a fully working, documented, compliant system (L1+L2). Everything
-required to *run and evaluate* the demo is public. What's private is the
-*production* layer — exactly the boundary any acquirer expects. A company can
-clone the demo; they cannot clone 60 verified passages, the tuning know-how, or
-the credibility trail in `results/`.
+```powershell
+git status --short
+git ls-files
+```
 
-## The Sale Narrative (for later, when this becomes a product)
-"We're not selling code. We're selling a validated diagnostic methodology, a
-compliance-first deployment pattern for national AI stacks, and a data flywheel
-that improves with every school onboarded. The demo is the receipt; the manual is
-the product."
+Set Hugging Face access tokens through the local Hugging Face CLI login or a
+Space secret. Never place credentials in source files, notebooks, prompts, or
+tracked configuration.
+
+## Provenance and verification
+
+Inspect each passage's `human_verified` field and source before describing it as
+reviewed. Keep generated drafts separate from content approved for learner use.
+Record the model, data source, and review process for any new dataset or
+evaluation result added to the repository.
+
+See [licensing notes](05_licensing_and_compliance.md) and the
+[data formats](03_data_schema.md) for additional handling guidance.

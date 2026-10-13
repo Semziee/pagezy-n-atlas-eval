@@ -1,35 +1,50 @@
-# 01 — Vision & The Strategic Pivot
+# Project Vision and Scope
 
-## The Problem (60 seconds)
-Millions of Nigerian primary students fall behind in reading. Teachers cannot
-diagnose *why* a child struggles: is it **decoding** (can't turn letters into
-sounds) or **comprehension** (can read the words but doesn't understand)?
-The two need completely different interventions. Pagezy distinguishes them with
-one elegant trick: **compare performance on silent reading vs. audio-assisted listening.**
+## Problem
 
-- Reads poorly, listens well → **Decoding Gap** → needs phonics intervention.
-- Reads and listens equally poorly → **Comprehension Gap** → needs vocabulary/background-knowledge work.
+Reading difficulties can have different causes. A learner who understands a
+passage when listening but struggles to read it may need different support from
+a learner who has difficulty understanding it in either mode.
 
-## The Two Constraints → The Two Pivots (MEMORIZE THIS TABLE)
+Pagezy explores a read-versus-listen framing for this problem using passages
+with questions and a simple diagnostic message. Its intended audience is
+Nigerian primary-school learners, but the current repository is a prototype,
+not a validated tool for real learner assessment.
 
-| N-ATLAS limitation | Our pivot | The pitch line |
-|---|---|---|
-| No children's speech data; accuracy degrades in noise | V1 uses **audio playback only** (TTS / pre-recorded MP3). No child ASR in V1. | "We explicitly defer student voice-input to Phase 2, where we will crowdsource Nigerian children's speech through this competition to fine-tune N-ATLAS ASR — closing a documented gap in the national stack." |
-| Free tier: max 1,000 active users + must display "Powered by Awarri" | Badge in UI footer + explicit license compliance in README. | "Our prototype is architected for full N-ATLAS Research License compliance: capped users, non-commercial, full attribution." |
+## Current prototype
 
-Judges reward teams that *read the docs*. Constraints quoted back as architecture = credibility.
+The repository includes:
 
-## What V1 Is / Is Not
+- A Gradio reading demo with sample passages, a multiple-choice question,
+  manually entered reading/listening scores, and a heuristic result.
+- A separate Model Arena that compares hints from N-ATLAS with a Pagezy PEFT
+  adapter, Qwen 2.5 3B, and Llama 3.2 3B.
+- Scripts for passage generation, SQuAD-based data preparation, QLoRA
+  fine-tuning, audio generation, and model evaluation.
+- Recorded CSV evaluation outputs and project documentation.
 
-**IS:** one repo, two entry points (product demo + evaluation harness), 40–60
-human-verified passages (20 done by Day 1), a 1–5 scoring rubric, a leaderboard,
-compliance-first posture.
+The score sliders are not derived from quiz performance. The app has no
+speech-input workflow, and its current UI does not play the repository's sample
+audio files. Review the [system architecture](02_system_architecture.md) and
+[safety limitations](06_safety_and_limitations.md) for implementation detail.
 
-**IS NOT:** a deployed product for real schools, child voice input, a fine-tuned
-model, multi-subject coverage. Do not let scope creep past this line before Oct 12.
+## Design choices
 
-## Why This Wins (Evaluation Story)
-1. **Social impact** — real diagnostic gap, Nigerian curriculum alignment.
-2. **Engineering rigor** — reproducible benchmark harness, not vibes.
-3. **Ecosystem contribution** — Phase 2 ASR roadmap benefits the national AI stack.
-4. **Compliance maturity** — licensing treated as architecture, not afterthought.
+- **Keep the scope demonstrable.** The app shows a basic reading workflow and
+  separates it from model comparison.
+- **Keep generated content identifiable.** Model-generated passages are drafts
+  until independently reviewed.
+- **Report what the evaluation actually measures.** Current grounding and
+  refusal signals are string-matching heuristics, not validated safety or
+  factuality metrics.
+- **Treat licensing as a deployment requirement.** N-ATLAS and other model
+  licenses apply separately from this repository's license. The app does not
+  enforce a user cap.
+
+## Possible future work
+
+Potential next steps include adding actual audio playback, deriving score inputs
+from assessment interactions, having educators review and validate the
+diagnostic, improving the evaluation methodology, and documenting a deployable
+model configuration. Any use of children's speech or personal data would
+require appropriate consent, privacy safeguards, and governance review.

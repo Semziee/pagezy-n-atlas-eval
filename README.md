@@ -1,3 +1,15 @@
+---
+title: Pagezy Reading Diagnostic
+emoji: 📖
+colorFrom: blue
+colorTo: yellow
+sdk: gradio
+sdk_version: 5.22.0
+python_version: 3.11
+app_file: app/app.py
+pinned: false
+---
+
 # Pagezy: Reading Diagnostic and N-ATLAS Evaluation
 
 Pagezy is a prototype reading tutor and model-evaluation project focused on
@@ -18,14 +30,15 @@ support with decoding. A learner who has difficulty in both modes may need help
 with vocabulary or comprehension.
 
 Pagezy demonstrates this read-versus-listen framing with short passages,
-multiple-choice questions, audio playback, and a simple diagnostic. It also
-compares language-model outputs for educational prompts, with an emphasis on
-grounding, age-appropriate language, cultural relevance, and safety.
+multiple-choice questions, manually entered scores, and a simple diagnostic.
+Sample audio assets are included, but the current UI does not play them. The
+project also compares language-model outputs for educational prompts, with an
+emphasis on grounding, age-appropriate language, cultural relevance, and safety.
 
 ## What is included
 
-- A Gradio demo for reading passages, listening to audio, answering a question,
-  and viewing a heuristic reading-diagnostic result.
+- A Gradio demo for reading passages, answering a question, entering
+  read/listen scores, and viewing a heuristic reading-diagnostic result.
 - A four-model comparison interface for N-ATLAS, a Pagezy QLoRA adapter, Qwen,
   and Llama.
 - Scripts for preparing a SQuAD-derived training/holdout dataset, generating
@@ -57,6 +70,22 @@ The current demo does **not** measure a child's reading or listening ability
 itself: the scores are entered manually. Its diagnostic is illustrative and
 should not be used to diagnose a learner or make educational placement
 decisions.
+
+## Use the demo
+
+1. Open the **Learn with Pagezy** tab.
+2. Choose a story and read the passage. The included audio files are examples;
+   the current UI does not include an audio player or capture spoken answers.
+3. Select an answer to the passage question.
+4. Set the reading and listening sliders to explore how the heuristic diagnostic
+   changes, then choose **Check Answer** to see feedback.
+5. Open **Model Arena** and choose **Run 4-Model Comparison** to compare model
+   hints. The first run downloads and loads the models, so it can take several
+   minutes and needs a supported GPU with enough VRAM.
+
+The UI's read/listen scores are illustrative manual inputs, not measured quiz
+scores. The standard learner demo uses a fixed hint; model-generated hints are
+shown separately in the Model Arena.
 
 ## Architecture
 
@@ -164,6 +193,49 @@ The fine-tuning workflow is in `scripts/fine-tune-qlora.py`; it expects the
 training data above and a suitable GPU environment. Do not treat generated
 passages as verified curriculum materials without an independent human review.
 
+## Deploy to Hugging Face Spaces
+
+The repository root README contains Hugging Face Spaces metadata: it selects
+the Gradio SDK and points Spaces to `app/app.py`. To deploy:
+
+1. Create a Space under your Hugging Face account or organization. Select the
+   **Gradio** SDK and choose GPU hardware; this app is not configured for
+   CPU-only inference.
+2. Confirm your Hugging Face account has permission to download every model
+   used by the Model Arena, including any gated repositories. If the Space
+   needs authenticated downloads, add a read-access token as a Space secret
+   named `HF_TOKEN` in **Settings → Variables and secrets**. Never put a token
+   in a tracked file or in the README.
+3. Add the Space as a Git remote and push the branch you want to deploy:
+
+   ```powershell
+   git remote add space https://huggingface.co/spaces/<account>/<space-name>
+   git push space main
+   ```
+
+   Replace `<account>` and `<space-name>` with the values in the Space URL. If
+   the `space` remote already exists, update it with `git remote set-url space
+   https://huggingface.co/spaces/<account>/<space-name>` instead.
+4. Follow the Space **Logs** tab through dependency installation and startup.
+   After a successful build, open the Space and test both tabs.
+
+The Model Arena loads quantized N-ATLAS (with the Pagezy adapter), Qwen, and
+Llama weights into GPU memory. Choose hardware with enough VRAM for all three
+models plus runtime overhead; a larger GPU may be needed depending on model
+revisions and library behavior. CPU-only Spaces are not a supported target.
+The Llama model may require separate access approval. A Hugging Face token
+does not bypass model-gating requirements.
+
+On every push, Spaces rebuilds the app environment from `requirements.txt`.
+Review the build and runtime logs if the Space fails; common causes include
+missing model access, insufficient GPU memory, or a PyTorch/bitsandbytes/CUDA
+compatibility issue. The app currently launches Gradio with `share=True`, which
+may also create a separate public Gradio share link; use the Space URL as the
+canonical deployment URL and do not use the demo with private data.
+
+For the full checklist and troubleshooting notes, see
+[`docs/08_runbook_deployment.md`](docs/08_runbook_deployment.md).
+
 ## Data and evaluation
 
 - `data/passages.jsonl` contains 20 demo passages in English, Pidgin, and
@@ -186,8 +258,9 @@ establish factual correctness or child safety.
 
 - The project is a prototype and its diagnostic is not a clinical or validated
   educational assessment.
-- V1 uses audio playback and manually entered answers; it does not implement
-  child-speech recognition.
+- The app includes sample audio assets but does not currently play them. It
+  uses manually selected answers and manually entered read/listen scores; it
+  does not implement child-speech recognition.
 - Do not submit personal or sensitive information to the demo. The app's
   current Gradio sharing setting exposes a public share link.
 - This repository's code is offered under Apache-2.0; see [`LICENSE`](LICENSE).
@@ -209,7 +282,7 @@ for more detail.
 - [Safety and limitations](docs/06_safety_and_limitations.md)
 - [Licensing and compliance](docs/05_licensing_and_compliance.md)
 - [Deployment runbook](docs/08_runbook_deployment.md)
-- [Project checklist](docs/10_submission_checklist.md)
+- [Release checklist](docs/10_release_checklist.md)
 
 ## License
 

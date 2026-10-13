@@ -1,26 +1,44 @@
-# 06 — Safety & Limitations (Ship This Publicly — It Builds Trust)
+# Safety and Limitations
 
-## Known Limitations (The Honest List)
-1. **No child-speech ASR in V1.** N-ATLAS ASR lacks comprehensive Nigerian
-   children's speech data and degrades in noise. Therefore V1 uses audio
-   *playback* (TTS / pre-recorded MP3) and human-entered answers.
-2. **Diagnostic is a screening signal, not a clinical diagnosis.** Output language
-   to parents: "Your child shows a pattern consistent with a decoding gap — we
-   recommend a teacher assessment." Never "Your child has dyslexia."
-3. **LLM hints can be wrong.** Every hint is generated live; the harness measures
-   hint quality (rubric) but no guarantee attaches to a single hint.
-4. **1,000-user cap** on the free N-ATLAS tier by design.
-5. **20–60 passages** is a demo corpus, not curricular coverage.
+Pagezy is a research and demonstration prototype, not a validated educational
+assessment, clinical tool, or production service.
 
-## Safety Controls Implemented
-- Safety dimension in rubric with **auto-fail** and a `results/safety_flags.md` log (see `docs/04`).
-- Input is multiple-choice only in V1 — no free-text child input reaches the LLM.
-- No personal data collected (see `docs/05`).
-- Judge-prompt frozen; human spot-check on ≥20% of eval outputs.
+## Current limitations
 
-## Phase 2 Roadmap (the part judges remember)
-1. Crowdsource child speech via school partnerships (with consent frameworks) —
-   this competition's visibility is the recruitment channel.
-2. Fine-tune N-ATLAS ASR on that corpus → closes a **documented national gap**.
-3. Expand corpus to full primary curriculum; add teacher dashboard.
-4. Governance: child-data consent, model cards, external red-team of hint safety.
+1. **Scores are manual.** The app asks the user to set reading and listening
+   scores. It does not measure a learner's reading, listening, or comprehension
+   performance.
+2. **No speech input or audio playback in the app UI.** There is no child-speech
+   recognition or audio upload workflow. Sample MP3 files are present in the
+   repository, but the current interface does not play them.
+3. **Heuristic diagnostic.** `app/diagnostics.py` applies fixed score thresholds
+   and returns a short message. It has not been validated against teachers,
+   learners, or a clinical assessment.
+4. **Limited feedback.** The learner tab shows a fixed hint for incorrect
+   answers. Model-generated hints are available only in the separate Model
+   Arena.
+5. **Model output can be wrong or unsafe.** The Arena's grounding indicator is
+   a substring match and does not establish factuality or safety. The app does
+   not block or automatically review unsafe generated text.
+6. **Small, mixed-verification corpus.** The app's 20 passages are a demo set;
+   records have different `human_verified` values. The set is not comprehensive
+   curriculum coverage.
+7. **Deployment limits are not enforced by the app.** The UI displays N-ATLAS
+   attribution and license text, but does not implement a 1,000-user cap.
+   Confirm current model terms and deployment requirements independently.
+
+## Safer use
+
+- Do not use the diagnostic to label, rank, place, or make high-impact
+  decisions about a learner.
+- Treat generated text as unreviewed until a qualified person has checked it.
+- Do not enter personal or sensitive learner information. The app has no
+  account system, but the hosting platform and its logs have separate behavior
+  that should be reviewed before public deployment.
+- Check the `human_verified` field and provenance of every passage before
+  presenting it as reviewed educational material.
+- Obtain appropriate consent and governance review before any future collection
+  or use of child data.
+
+See [licensing notes](05_licensing_and_compliance.md) for model, data, and
+deployment considerations.

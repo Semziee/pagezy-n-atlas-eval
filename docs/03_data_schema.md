@@ -1,65 +1,82 @@
-# 03 — Data Layer Specification
+# Data Formats
 
-## The Golden Dataset Rule
-`data/passages.jsonl` is **append-only and human-verified**. Model output never
-enters this file without a human review pass. The label "Curriculum-aligned,
-human-verified" is our credibility — protect it.
+This document describes the data formats currently used by the app and
+workflows. The passage corpus and the SQuAD-derived training/evaluation files
+have related but not identical provenance and should not be treated as one
+curated dataset.
 
-## JSONL Schema (one passage per line)
+## App passage corpus
+
+`data/passages.jsonl` contains one JSON object per line. Current records use
+fields similar to:
 
 ```json
 {
-  "id": "eng-001",
-  "language": "english | yoruba | pidgin",
-  "curriculum_tag": "Nigeria-Primary-3-English | ...",
-  "source": "model-generated + human-verified",
-  "grade_level": 3,
-  "text": "The passage text, 60–120 words for Primary 3.",
-  "questions": [
+  "id": "narrative-01",
+  "age_group": "8-12",
+  "language": "english",
+  "read_text": "Passage text...",
+  "audio_script": "Passage text for an audio workflow...",
+  "quiz": [
     {
-      "qid": "eng-001-q1",
-      "question": "…",
-      "options": ["A", "B", "C", "D"],
-      "answer": "B",
-      "skill": "literal | inferential | vocabulary"
+      "question": "What is the moral of the story?",
+      "options": ["Perseverance", "Speed", "Laziness", "Haste"],
+      "correct": "Perseverance",
+      "explanation": "The explanation shown after a correct answer."
     }
   ],
-  "diagnostic_type": "read_vs_listen",
-  "tts_audio_path": "assets/audio/eng-001.mp3",
-  "reviewed_by": "<your name>",
-  "review_date": "2026-10-07",
-  "review_notes": "Fixed option C; simplified sentence 2."
+  "diagnostic_focus": "comprehension",
+  "human_verified": false
 }
 ```
 
-## Field Rules
-- `id`: `<lang>-<NNN>` — never reuse an ID, even if a passage is deleted (deletion = mark `deprecated: true`, never remove the line).
-- `options`: always 4 options; exactly one correct.
-- `tts_audio_path`: null is allowed at Day 1 for Yoruba/Pidgin if TTS unavailable — but ≥2 MP3s must exist by CP-3.3.
-- Every line must have `reviewed_by` + `review_date`. Missing = not verified = cannot be used in the demo.
+The app reads `id`, `read_text`, and the first item in `quiz` (including
+`question`, `options`, `correct`, and `explanation`). The other fields are
+descriptive or intended for future use. The current app does not use
+`audio_script` to play audio.
 
-## Target Volumes
-| Milestone | Passages | Mix |
-|---|---|---|
-| Day 1 (CP-1.5) | 20 verified | 10 English, 10 Yoruba or Pidgin |
-| Day 3 (nice-to-have) | 40 | + science/social studies |
-| Stretch | 60 | only if Gates 1–3 are green |
+The checked-in corpus has 20 records in English, Pidgin, and Yoruba. Records
+have different `human_verified` values; inspect each record before reuse. Do
+not describe all records as human-reviewed or curriculum-validated.
 
-## Generation Prompt (Day 1, `scripts/gen_passages.py`)
-System: "You are a Nigerian primary-school curriculum expert. Generate reading
-comprehension passages aligned with the Nigerian curriculum. Language, grade,
-topic, and difficulty are given per call."
-User: "Generate 1 passage for Grade 3, language = {lang}, topic = {topic from
-list: market day, rainy season, family, football, farming}. 60–120 words, then
-exactly 3 questions with 4 options each, one correct. Output strict JSON matching
-the schema in docs/03_data_schema.md."
-**Why one passage per call:** failure isolation. A malformed call wastes one
-prompt, not ten.
+## Generated passage drafts
 
-## Human Review Checklist (apply to every line, Day 1)
-- [ ] Age-appropriate vocabulary for the stated grade
-- [ ] Cultural context is Nigerian, not generic/Western
-- [ ] Exactly one correct option per question; options are plausible
-- [ ] At least one inferential question per passage (literal-only is too easy)
-- [ ] Yoruba/Pidgin: idioms correct — flag anything that "sounds translated"
-- [ ] JSON valid; all schema fields present
+`scripts/gen-passages.py --lang <english|pidgin|yoruba>` generates drafts and
+appends them to `data/draft_passages.jsonl`. Generated records are marked
+`human_verified: false`. The script does not validate the content, check schema
+completeness, or perform human review. Review the content and provenance before
+adopting it in the demo corpus.
+
+## Training and holdout files
+
+`scripts/prepare-dataset.py` samples 500 records from the
+`rajpurkar/squad` dataset, then writes 400 records to
+`data/train_400.jsonl` and 100 to `data/test_100.jsonl`. Each output record
+contains:
+
+- `id`, `age_group`, `language`, and `read_text`
+- `quiz`: a one-item list with `question`, `options`, `correct`, and
+  `explanation`
+- `human_verified`, set by the script based on the original SQuAD source
+
+The script's options contain the answer plus placeholder distractors. This is
+not a validated multiple-choice assessment dataset. Running the script
+overwrites the checked-in train and holdout files.
+
+## Evaluation output
+
+`harness/eval_finetuned.py` reads the first 20 rows from
+`data/test_100.jsonl` and writes one row per model and example to
+`results/2026-10-12_finetune_eval.csv`. Columns include `model`, `item_id`,
+`response`, `grounded`, `refused`, and `words`. `grounded` is a literal
+substring match to the expected answer; `refused` uses a list of phrase
+matches. These are simple heuristics, not human judgments or comprehensive
+safety/factuality measures.
+
+## Handling guidance
+
+- Keep generated drafts separate from reviewed material.
+- Preserve the origin and license terms for third-party data.
+- Check the `human_verified` field and source before using a passage with
+  learners.
+- Back up result files before rerunning scripts that overwrite them.

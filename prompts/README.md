@@ -1,5 +1,14 @@
-# prompts/
+# Prompt examples
 
-Production prompt library lives in the private `pagezy-core` repository
-(see `docs/07_ip_and_moat.md`). This directory intentionally contains only
-placeholders so the public repo runs with safe defaults.
+This directory contains the public prompt examples used or considered by the
+project:
+
+- `passage_generation.txt` — instructions for generating draft passages.
+- `tutor_hint.txt` — a hint-generation prompt.
+- `judge_prompt_v1.txt` — an evaluation/judge prompt example.
+
+These files are examples, not evidence that every prompt is wired into the
+current app or evaluation script. In particular, the app builds its own hint
+prompt in `app/app.py`, and `harness/eval_finetuned.py` uses a separate
+explanation prompt. See the [system architecture](../docs/02_system_architecture.md)
+for the current execution paths.
