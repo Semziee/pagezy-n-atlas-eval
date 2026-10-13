@@ -1,0 +1,5 @@
+Passage: {read_text}
+Question: {question}
+Student incorrectly answered: {wrong_answer}
+
+Provide a 1-sentence, culturally relevant hint to guide them to the correct answer without giving it away.

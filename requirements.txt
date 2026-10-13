@@ -1,0 +1,27 @@
+# ==========================================================
+# Pagezy x N-ATLAS — Pinned Dependencies
+# Tested on Python 3.11–3.13 | Colab T4 + local CPU/GPU
+# ==========================================================
+
+# --- Core ML Stack ---
+torch==2.6.0
+# (Local NVIDIA GPU alternative: pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124)
+transformers==4.51.3
+tokenizers==0.21.1
+safetensors==0.5.3
+huggingface-hub==0.30.2
+accelerate==1.6.0
+peft==0.15.2
+bitsandbytes==0.45.5
+datasets==3.5.0
+
+# --- Evaluation & Data Pipeline ---
+pandas==2.2.3
+numpy==2.2.4
+
+# --- App / UI Layer ---
+gradio==5.22.0
+nest-asyncio==1.6.0
+
+# --- Accessibility Layer (TTS audio generation) ---
+edge-tts==7.0.0

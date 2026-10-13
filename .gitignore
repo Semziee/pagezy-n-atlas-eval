@@ -1,0 +1,27 @@
+# --- IP fence (docs/07) ---
+.env
+secrets/
+data/passages_full.jsonl
+prompts/final/
+results/private/
+results/cache/
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+
+# --- Local planning notes ---
+/day_plans/
+
+# --- Local model artifacts ---
+pagezy-n-atlas-qlora-500/
+*.zip
+
+# --- OS ---
+.DS_Store
