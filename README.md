@@ -275,6 +275,7 @@ for more detail.
 
 ## Documentation
 
+- [N-ATLaS QLoRA model card](MODEL_CARD.md)
 - [Project vision and scope](docs/01_vision_and_pivot.md)
 - [System architecture](docs/02_system_architecture.md)
 - [Data schema](docs/03_data_schema.md)
